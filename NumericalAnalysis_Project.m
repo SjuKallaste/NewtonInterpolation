@@ -2,7 +2,7 @@ clc; clear; close all;
 
 % <problem data>
 fprintf('\n%s\n', repmat('-', 1, 52));
-fprintf('%s\n', '  Newton Interpolation — Problem Setup');
+fprintf('%s\n', '  Problem Setup');
 fprintf('%s\n', '  Press ENTER to accept the default value.');
 fprintf('%s\n\n', repmat('-', 1, 52));
 
@@ -49,11 +49,11 @@ end
 CW = 12;
 TW = 8 + CW * n;
 fprintf('\n%s\n', repmat('=', 1, TW));
-fprintf('%s\n', sprintf('%*s', floor(TW/2) + 14, 'DIVIDED DIFFERENCE TABLE'));
+fprintf('%s\n', sprintf('%*s', floor(TW/2) + 14, 'DIFF TABLE'));
 fprintf('%s\n', repmat('=', 1, TW));
 fprintf('%-8s', 'x');
 for j = 0:n-1
-    fprintf('%-*s', CW, sprintf('Ord-%d', j));
+    fprintf('%-*s', CW, sprintf('Diff #%d', j));
 end
 fprintf('\n%s\n', repmat('-', 1, TW));
 for i = 1:n
