@@ -16,11 +16,8 @@ else, y_data = str2num(raw); end %#ok<ST2NM>
 
 raw = input(sprintf('  f(t) expr [default: sin(3*t)] : '), 's');
 if isempty(raw), raw = 'sin(3*t)'; end
-f_exact = str2func(['@(t) ' raw]);
-
-raw = input(sprintf('  f''(t) expr [default: 3*cos(3*t)] : '), 's');
-if isempty(raw), raw = '3*cos(3*t)'; end
-f_deriv = str2func(['@(t) ' raw]);
+f_expr = raw;
+f_exact = str2func(['@(t) ' f_expr]);
 
 raw = input(sprintf('  Eval point x [default: 1.5] : '), 's');
 if isempty(raw), x_eval = 1.5;
@@ -127,7 +124,8 @@ rel_err = 100 * abs_err / abs(f_x);
 % <differentiate polynomial at x_eval>
 p_d = polyder(p_std);
 dP_x = polyval(p_d, x_eval);
-df_x = f_deriv(x_eval);
+h = 1e-7;
+df_x = (f_exact(x_eval + h) - f_exact(x_eval - h)) / (2 * h);
 % </differentiate polynomial at x_eval>
 
 % <integrate polynomial over [int_lo, int_hi]>
@@ -167,7 +165,7 @@ y_poly = polyval(p_std, x_plot);
 figure('Name', sprintf('Newton %s', method_str), 'NumberTitle', 'off', 'Color', 'w');
 hold on; grid on; box on;
 plot(x_plot, y_true, 'b-', 'LineWidth', 2.5, ...
-    'DisplayName', 'f(x) = sin(3x)');
+    'DisplayName', sprintf('f(x) = %s', f_expr));
 plot(x_plot, y_poly, 'r--', 'LineWidth', 2, ...
     'DisplayName', sprintf('P_{%d}(x) [%s]', degree, method_str));
 plot(x_data, y_data, 'ko', 'MarkerSize', 9, 'MarkerFaceColor', 'k', ...
