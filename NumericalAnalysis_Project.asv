@@ -1,41 +1,14 @@
 clc; clear; close all;
 
 % <problem data>
-fprintf('\n%s\n', repmat('-', 1, 52));
-fprintf('%s\n', '  Newton Interpolation — Problem Setup');
-fprintf('%s\n', '  Press ENTER to accept the default value.');
-fprintf('%s\n\n', repmat('-', 1, 52));
-
-raw = input(sprintf('  x nodes  [default: [1 1.3 1.6 1.9 2.2]] : '), 's');
-if isempty(raw), x_data = [1, 1.3, 1.6, 1.9, 2.2];
-else, x_data = str2num(raw); end %#ok<ST2NM>
-
-raw = input(sprintf('  f(x) vals [default: [0.1411 -0.6878 -0.9962 -0.5507 0.3115]] : '), 's');
-if isempty(raw), y_data = [0.1411, -0.6878, -0.9962, -0.5507, 0.3115];
-else, y_data = str2num(raw); end %#ok<ST2NM>
-
-raw = input(sprintf('  f(t) expr [default: sin(3*t)] : '), 's');
-if isempty(raw), raw = 'sin(3*t)'; end
-f_exact = str2func(['@(t) ' raw]);
-
-raw = input(sprintf('  f''(t) expr [default: 3*cos(3*t)] : '), 's');
-if isempty(raw), raw = '3*cos(3*t)'; end
-f_deriv = str2func(['@(t) ' raw]);
-
-raw = input(sprintf('  Eval point x [default: 1.5] : '), 's');
-if isempty(raw), x_eval = 1.5;
-else, x_eval = str2double(raw); end
-
-raw = input(sprintf('  Integral lower bound [default: 1] : '), 's');
-if isempty(raw), int_lo = 1;
-else, int_lo = str2double(raw); end
-
-raw = input(sprintf('  Integral upper bound [default: 1.6] : '), 's');
-if isempty(raw), int_hi = 1.6;
-else, int_hi = str2double(raw); end
-
+x_data = [1, 1.3, 1.6, 1.9, 2.2];
+y_data = [0.1411, -0.6878, -0.9962, -0.5507, 0.3115];
+f_exact = @(t) sin(3 * t);
+f_deriv = @(t) 3 * cos(3 * t);
+x_eval = 1.5;
+int_lo = 1;
+int_hi = 1.6;
 n = length(x_data);
-fprintf('\n');
 % </problem data>
 
 % <divided difference table construction>
@@ -70,7 +43,7 @@ fprintf('%s\n\n', repmat('=', 1, TW));
 % </print divided difference table>
 
 % <user menu>
-choice = menu('Select The Method Used', ...
+choice = menu('Newton Interpolation — Select Method', ...
     'Linear (Forward)', ...
     'Quadratic (Forward)', ...
     'Cubic (Forward)', ...
@@ -78,7 +51,7 @@ choice = menu('Select The Method Used', ...
     'Quadratic (Backward)', ...
     'Cubic (Backward)');
 if choice == 0
-    fprintf('%s\n', 'No method selected. Exiting...');
+    fprintf('%s\n', 'No method selected. Exiting.');
     return;
 end
 % </user menu>
@@ -133,7 +106,7 @@ df_x = f_deriv(x_eval);
 % <integrate polynomial over [int_lo, int_hi]>
 p_i = polyint(p_std);
 int_P = polyval(p_i, int_hi) - polyval(p_i, int_lo);
-int_f = integral(f_exact, int_lo, int_hi);
+int_f = (cos(3 * int_lo) - cos(3 * int_hi)) / 3;
 % </integrate polynomial over [int_lo, int_hi]>
 
 % <display results>
@@ -155,7 +128,7 @@ fprintf('%s\n', sprintf('  dP%d/dx at x = %g = %+.8f', degree, x_eval, dP_x));
 fprintf('%s\n', sprintf('  f''(%g)  [exact] = %+.8f', x_eval, df_x));
 fprintf('%s\n', thin);
 fprintf('%s\n', sprintf('  Integral P%d [%g, %g] = %+.8f', degree, int_lo, int_hi, int_P));
-fprintf('%s\n', sprintf('  Integral f  [%g, %g] = %+.8f', int_lo, int_hi, int_f));
+fprintf('%s\n', sprintf('  Integral f [%g, %g] = %+.8f', int_lo, int_hi, int_f));
 fprintf('%s\n\n', sep);
 % </display results>
 
