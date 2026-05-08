@@ -8,11 +8,11 @@ fprintf('%s\n\n', repmat('-', 1, 52));
 
 raw = input(sprintf('  x nodes  [default: [1 1.3 1.6 1.9 2.2]] : '), 's');
 if isempty(raw), x_data = [1, 1.3, 1.6, 1.9, 2.2];
-else, x_data = str2num(raw); end %#ok<ST2NM>
+else, x_data = parse_array(raw, [1, 1.3, 1.6, 1.9, 2.2]); end
 
 raw = input(sprintf('  f(x) vals [default: [0.1411 -0.6878 -0.9962 -0.5507 0.3115]] : '), 's');
 if isempty(raw), y_data = [0.1411, -0.6878, -0.9962, -0.5507, 0.3115];
-else, y_data = str2num(raw); end %#ok<ST2NM>
+else, y_data = parse_array(raw, [0.1411, -0.6878, -0.9962, -0.5507, 0.3115]); end
 
 raw = input(sprintf('  f(t) expr [default: sin(3*t)] : '), 's');
 if isempty(raw), raw = 'sin(3*t)'; end
@@ -21,15 +21,15 @@ f_exact = str2func(['@(t) ' f_expr]);
 
 raw = input(sprintf('  Eval point x [default: 1.5] : '), 's');
 if isempty(raw), x_eval = 1.5;
-else, x_eval = str2double(raw); end
+else, x_eval = parse_scalar(raw, 1.5); end
 
 raw = input(sprintf('  Integral lower bound [default: 1] : '), 's');
 if isempty(raw), int_lo = 1;
-else, int_lo = str2double(raw); end
+else, int_lo = parse_scalar(raw, 1); end
 
 raw = input(sprintf('  Integral upper bound [default: 1.6] : '), 's');
 if isempty(raw), int_hi = 1.6;
-else, int_hi = str2double(raw); end
+else, int_hi = parse_scalar(raw, 1.6); end
 
 n = length(x_data);
 fprintf('\n');
@@ -176,7 +176,20 @@ plot(x_eval, f_x, 'b^', 'MarkerSize', 11, 'MarkerFaceColor', 'b', ...
     'DisplayName', sprintf('f(%.1f) = %.4f', x_eval, f_x));
 xlabel('x', 'FontSize', 13);
 ylabel('y', 'FontSize', 13);
-title(sprintf('Newton %s Interpolation — EBS 207', method_str), 'FontSize', 14);
+title(sprintf('Newton %s Interpolation', method_str), 'FontSize', 14);
 legend('Location', 'best', 'FontSize', 11);
 hold off;
 % </plot>
+
+% <helpers>
+function v = parse_array(raw, default_val)
+    nums = str2double(regexp(regexprep(raw, '[\[\]]', ''), '[,\s]+', 'split'));
+    if any(isnan(nums)), warning('Bad input... using default.'); v = default_val;
+    else, v = nums; end
+end
+
+function v = parse_scalar(raw, default_val)
+    v = str2double(strtrim(raw));
+    if isnan(v), warning('Bad input... using default.'); v = default_val; end
+end
+% </helpers>
